@@ -62,11 +62,14 @@ services:
     restart: unless-stopped
 
   app:
-    image: ${APP_IMAGE}
+    build:
+      context: ../src
+      dockerfile: Dockerfile.app
     env_file:
       - .env
+    command: poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8004:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -78,7 +81,9 @@ services:
       - media:/app/media
 
   celery_worker:
-    image: ${CELERY_IMAGE}
+    build:
+      context: ../src
+      dockerfile: Dockerfile.celery
     env_file:
       - .env
     command: celery -A celery_app.main:celery_app worker -l INFO -Q default
