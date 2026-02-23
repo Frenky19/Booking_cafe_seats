@@ -79,6 +79,7 @@ services:
         condition: service_healthy
     volumes:
       - media:/app/media
+    restart: unless-stopped
 
   celery_worker:
     build:
